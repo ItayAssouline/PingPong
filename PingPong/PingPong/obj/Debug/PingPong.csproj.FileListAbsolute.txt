@@ -1,0 +1,7 @@
+E:\Mamas52\PingPong\PingPong\PingPong\bin\Debug\PingPong.exe.config
+E:\Mamas52\PingPong\PingPong\PingPong\bin\Debug\PingPong.exe
+E:\Mamas52\PingPong\PingPong\PingPong\bin\Debug\PingPong.pdb
+E:\Mamas52\PingPong\PingPong\PingPong\obj\Debug\PingPong.csprojAssemblyReference.cache
+E:\Mamas52\PingPong\PingPong\PingPong\obj\Debug\PingPong.csproj.CoreCompileInputs.cache
+E:\Mamas52\PingPong\PingPong\PingPong\obj\Debug\PingPong.exe
+E:\Mamas52\PingPong\PingPong\PingPong\obj\Debug\PingPong.pdb
