@@ -2,19 +2,20 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 
-namespace PingPong.Server
+namespace PingPongClient
 {
+
     class Program
     {
 
         // Main Method
         static void Main(string[] args)
         {
-            var serverModule = new ServerModule();
-            serverModule.ExecuteServer();
+            var client = new SocketClient();
+            client.ExecuteClient();
         }
+
 
         
     }

@@ -1,22 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace PingPongClient
 {
-
-    class Program
-    {
-
-        // Main Method
-        static void Main(string[] args)
-        {
-            ExecuteClient();
-        }
-
-        // ExecuteClient() Method
-        static void ExecuteClient()
+	class SocketClient
+	{
+        public void ExecuteClient()
         {
 
             try
@@ -50,9 +44,9 @@ namespace PingPongClient
                     // we will send to Server
                     string userInput = string.Empty;
 
-                    
+
                     while (userInput != "-1")
-					{
+                    {
                         Console.WriteLine("Enter your message to the server, to end: enter -1");
                         userInput = Console.ReadLine();
 
@@ -96,5 +90,6 @@ namespace PingPongClient
                 Console.WriteLine(e.ToString());
             }
         }
+
     }
 }
