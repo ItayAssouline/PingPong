@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
@@ -12,90 +13,65 @@ namespace PingPong
 	{
         public void ExecuteServer()
         {
-            IPHostEntry ipHost = Dns.GetHostEntry(Dns.GetHostName());
-            IPAddress ipAddr = ipHost.AddressList[0];
-            IPEndPoint localEndPoint = new IPEndPoint(ipAddr, 11111);
 
-            // Creation TCP/IP Socket using
-            // Socket Class Constructor
-            Socket listener = new Socket(ipAddr.AddressFamily,
-                         SocketType.Stream, ProtocolType.Tcp);
-
+            string serverIP = "127.0.0.1";
+            int port = 11111;
             try
             {
+                Console.WriteLine("Initializing.....");
+                TcpListener server = new TcpListener(IPAddress.Parse(serverIP), port);
+                server.Start();
+                Console.WriteLine($"Server is ready and waiting for connections on IP: {serverIP} & Port {port}");
 
-                // Using Bind() method we associate a
-                // network address to the Server Socket
-                // All client that will connect to this
-                // Server Socket must know this network
-                // Address
-                listener.Bind(localEndPoint);
-
-                // Using Listen() method we create
-                // the Client list that will want
-                // to connect to Server
-                listener.Listen(10);
-
-                Console.WriteLine("Waiting For Connections ... ");
                 while (true)
                 {
-
-                    Socket clientSocket = listener.Accept();
-                    Console.WriteLine("New Connection! Handling.");
-                    Task.Run(() =>
-                    {
-                        HandleClient(clientSocket);
+                    var client = server.AcceptTcpClient();
+                    Task.Run(() => {
+                        HandleClient(client);
                     });
+
                 }
-
-
+                
+                server.Stop();
             }
-
             catch (Exception e)
             {
                 Console.WriteLine(e.ToString());
             }
         }
 
-        public void HandleClient(Socket clientSocket)
+        public void HandleClient(TcpClient client)
         {
-            byte[] bytes = new Byte[1024];
-            string data = string.Empty;
+            Console.WriteLine("Connected!");
+            Byte[] bytes = new Byte[256];
+            String data = null;
 
-            while (data.IndexOf("<CloseSocket>") == -1)
+            // Get a stream object for reading and writing
+            NetworkStream stream = client.GetStream();
+
+            int i;
+
+            // Loop to receive all the data sent by the client.
+            while ((i = stream.Read(bytes, 0, bytes.Length)) != 0)
             {
-                data = string.Empty;
+                // Translate data bytes to a ASCII string.
+                data = System.Text.Encoding.ASCII.GetString(bytes, 0, i);
+                Console.WriteLine("Received: {0}", data);
 
-                while (true)
-                {
-                    int numByte = clientSocket.Receive(bytes);
+                // Process the data sent by the client.
+                data = data.ToUpper();
 
-                    data += Encoding.ASCII.GetString(bytes,
-                                               0, numByte);
-                    if (data.IndexOf("<EOF>") > -1)
-                        break;
-                }
-                string dataParsed = data;
-                if (data.IndexOf("<CloseSocket>") != -1)
-                {
-                    dataParsed = dataParsed.Remove(dataParsed.Length - "<CloseSocket>".Length, "<CloseSocket>".Length);
-                }
-                dataParsed = dataParsed.Remove(dataParsed.Length - 6, 6);
-                Console.WriteLine("Text received -> {0} ", dataParsed);
-                byte[] message = Encoding.ASCII.GetBytes(dataParsed);
+                byte[] message = Encoding.ASCII.GetBytes($"{data}");
 
-                // Send a message to Client
-                // using Send() method
-                clientSocket.Send(message);
-
+                // Send back a response.
+                stream.Write(message, 0, message.Length);
+                Console.WriteLine("Sent: {0}", data);
             }
-            // Close client Socket using the
-            // Close() method. After closing,
-            // we can use the closed Socket
-            // for a new Client Connection
-            Console.WriteLine("Connection Closed");
-            clientSocket.Shutdown(SocketShutdown.Both);
-            clientSocket.Close();
+
+			// Shutdown and end connection
+			Console.WriteLine("Closes Connection");
+            client.Close();
+
         }
     }
 }
